@@ -1,0 +1,14 @@
+# AOCI agent host integration (machine-bound; do not commit)
+.codex/config.toml
+.codex/config.toml.backup.*
+application-local.yml
+**/application-local.yml
+target/
+apache-tomcat-*/
+.idea/
+.aoci/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-*/
+frontend/ego-*.mjs
+.env

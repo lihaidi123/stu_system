@@ -1,0 +1,166 @@
+#AOCI-CODE-VOLUME: 1
+
+===/<repository>/===
+AGENTS.md[SC8T]: F:规定学生成绩系统开发与验证约束 | R:code:docs/开发文档.md,code:docs/TASKS.md | A:约束每轮开发审查和收尾 | S:AOCI语义必须按实时机器签发Plan、证据和批次创作，不得手工改写索引
+.gitattributes[FC3T]: F:为仓库文件统一跨平台行尾属性 | R:- | A:- | S:-
+.gitignore[FC3T]: F:排除本机配置和生成目录 | R:- | A:Git工作区筛选 | S:application-local.yml含本地连接凭据且必须保持未跟踪
+README.md[SC5T]: F:说明本地数据库、管理员初始化恢复和前后端启动 | R:code:docs/API.md,code:docs/TASKS.md,code:src/main/java/edu/stusystem/StudentSystemApplication.java,code:frontend/vite.config.js | A:指引开发者配置依赖、运行并恢复本地系统 | S:恢复口令仅由临时环境变量提供；Vite代理目标可用STU_SYSTEM_API_PROXY_TARGET本地覆盖
+application-local.example.yml[FC4T]: F:提供不含密钥的本地MySQL、Redis和头像存储配置样例 | R:code:src/main/resources/application.yml,code:src/main/java/edu/stusystem/service/AvatarStorageProperties.java | A:复制后填入本机连接与可选COS凭据 | S:COS凭据样例留空，不得写入版本控制
+pom.xml[FC7T]: F:锁定Boot 4后端构建及数据、安全和集成依赖 | R:code:docs/adr/0001-runtime-compatibility.md,code:src/main/resources/db/migration/V1__identity_and_teaching.sql | A:Maven解析、编译和打包应用 | S:MyBatis-Plus须使用Boot 4专用starter
+
+===/<repository>/docs/===
+API.md[SC6T]: F:记录REST接口、安全授权与文件处理契约 | R:code:src/main/java/edu/stusystem/api/DomainController.java,code:docs/开发文档.md | A:维护接口联调路径、稳定错误和实现边界 | S:认证状态不可核实时拒绝请求并返回503
+ARCHITECTURE.md[SC5T]: F:说明模块边界和首阶段交付顺序 | R:code:docs/adr/0001-runtime-compatibility.md,code:src/main/java/edu/stusystem/service/DomainService.java | A:指导业务模块演进 | S:MyBatis-Plus已加载但当前首批持久化使用JdbcTemplate
+COMPONENT_SOURCES.md[SC4T]: F:记录前端组件检索来源、采用与未采用理由 | R:code:docs/DESIGN.md,code:frontend/src/App.vue,code:frontend/src/stage4.css,code:frontend/src/NewWorkspace.vue,code:frontend/src/new-workspace.css | A:为界面依赖和组件来源选择保留可核对依据 | S:-
+DATA_MODEL.md[SC6T]: F:说明实体关系、数据库结构和事务派生约束 | R:code:src/main/resources/db/migration/V1__identity_and_teaching.sql,code:src/main/java/edu/stusystem/service/IdentityService.java,code:docs/开发文档.md | A:指导数据关系和一致性实现 | S:登录与敏感验证限流状态在Redis；头像对象键不返回客户端
+DESIGN.md[SC4T]: F:规定角色工作台层级、布局和组件选型记录方式 | R:code:docs/开发文档.md,code:docs/COMPONENT_SOURCES.md,code:frontend/src/NewWorkspace.vue,code:frontend/src/new-workspace.css | A:指导工作台设计和视觉验收 | S:关键页面应通过ego-browser在四种指定视口保留真实截图证据
+REQUIREMENTS.md[SC5T]: F:追踪系统需求范围、实现状态与验收缺口 | R:code:docs/开发文档.md,code:docs/TASKS.md | A:汇总需求编号和验证进度 | S:需求状态只能依据实际验证结果更新
+TASKS.md[SC7M]: F:交接各阶段实现、验证证据、剩余工作和后续步骤 | R:code:AGENTS.md,code:docs/TESTING.md,code:docs/DESIGN.md,code:docs/COMPONENT_SOURCES.md,code:docs/evidence/new-workspace/README.md,code:frontend/src/NewWorkspace.vue | A:记录可核对的阶段状态、验证边界和后续工作 | S:未执行的测试或视觉检查必须明确记录为未验证
+TESTING.md[SC5T]: F:定义需求验收、数据隔离和浏览器证据记录规则 | R:code:docs/开发文档.md,code:docs/TASKS.md,code:docs/evidence/stage4/README.md | A:指导测试并记录可复核结果 | S:Stage 3和Stage 4破坏性夹具必须使用各自专用schema前缀
+开发文档.md[SC8L]: F:定义学生成绩系统完整需求、领域规则与验收基线 | R:code:AGENTS.md,code:docs/REQUIREMENTS.md | A:作为独立实现的规范来源 | S:本机数据库密码只配置在未跟踪的本地文件中，不得记入规格或版本控制
+STAGE-3-HANDOFF.md[SC5T]: F:交接成绩一致性阶段的实现状态和验证缺口 | R:code:docs/开发文档.md,code:docs/TASKS.md,code:docs/TESTING.md | A:续接第三阶段实现与验收 | S:历史MySQL通过记录不证明后续源码修改仍通过
+STAGE-3-REMAINING-HANDOFF.md[SC6T]: F:交接第三阶段验收结果、验证证据与后续阶段边界 | R:code:docs/TASKS.md,code:docs/adr/0002-grade-consistency-locking.md,code:src/test/java/edu/stusystem/service/GradeConsistencyMySqlTest.java | A:保留阶段关闭依据及后续延期项 | S:隔离测试夹具会清理数据库，连接目标必须匹配stu_stage3_test前缀
+STAGE-3-ROADMAP.md[SC5T]: F:记录第三阶段成绩一致性实现和验收证据 | R:code:docs/开发文档.md,code:docs/TASKS.md,code:docs/TESTING.md | A:汇总AOP、QA测试、构建和OpenAPI检查结果 | S:QA-15用户与Excel导入子项明确延期且不计为已覆盖
+STAGE-4-ROADMAP.md[SC6T]: F:规划账户成绩文件、个人中心与头像阶段的依赖和验收 | R:code:docs/开发文档.md,code:docs/TASKS.md,code:docs/TESTING.md,code:docs/API.md | A:拆分实施顺序并汇总当前阶段验收证据 | S:安全前置项须以实际故障和集成测试证据判定
+STAGE-4-HANDOFF.md[SC5S]: F:交接第四阶段实现、桌面优化、最终验收和后续边界 | R:code:docs/TASKS.md,code:docs/STAGE-4-ROADMAP.md,code:docs/evidence/stage4/README.md | A:记录Stage 4最终证据并界定更广系统需求 | S:破坏性集成测试只能连接stu_stage4_test专用schema，不得使用本地stu_system配置
+REMAINING-WORK.md[SC5T]: F:区分已验收的Stage 4与尚未完成的系统级产品需求 | R:code:docs/TASKS.md,code:docs/REQUIREMENTS.md,code:docs/STAGE-4-HANDOFF.md,code:docs/STAGE-4-ROADMAP.md | A:交接已完成证据、开放需求与后续分阶段设计 | S:Stage 4完成不代表CAPTCHA、四角色完整工作流或QA-22全视口验收完成
+NEXT-STAGE-HANDOFF.md[SC5T]: F:交接Stage 4验收后的CAPTCHA、四角色工作流和QA-22后续范围 | R:code:AGENTS.md,code:docs/开发文档.md,code:docs/REQUIREMENTS.md,code:docs/API.md,code:docs/DESIGN.md,code:docs/TASKS.md | A:按分阶段顺序指导后续需求盘点、设计和验证 | S:CAPTCHA设计评审通过前不得实现认证契约变更
+
+===/<repository>/docs/adr/===
+0001-initial-architecture.md[SC4T]: F:记录首轮Java和模块化技术路线选择 | R:code:docs/开发文档.md | A:说明Java 23基线的选择原因 | S:框架依赖兼容性需以官方核验和实际构建结果为证
+0001-runtime-compatibility.md[SC6T]: F:记录Java 23、Boot 4及关键库版本的兼容证据 | R:code:pom.xml,code:docs/adr/0001-initial-architecture.md,code:src/main/java/edu/stusystem/service/AvatarImageValidator.java | A:解释版本锁定及兼容缺口 | S:MySQL 9.6运行迁移成功，但Flyway已验证上限为8.1
+0002-grade-consistency-locking.md[SC6T]: F:记录成绩和学生事务的锁顺序、派生更新及审计决策 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/GradeDerivationAspect.java,code:src/main/java/edu/stusystem/service/AuditAspect.java | A:解释并发一致性策略及其验证状态 | S:先锁学生再按ID升序锁班级，避免调班与成绩写入读取不一致归属
+
+===/<repository>/frontend/===
+index.html[EU3T]: F:提供Vue应用挂载容器和中文文档元信息 | R:code:frontend/src/main.js | A:浏览器加载前端入口 | S:-
+package.json[FC5T]: F:声明Vue前端运行和构建依赖 | R:code:frontend/package-lock.json,code:frontend/vite.config.js | A:npm解析脚本与依赖版本范围 | S:构建产物目前仍有超过500KB的JavaScript主chunk警告
+vite.config.js[FC4T]: F:配置Vue插件和Vite本地代理开发服务器 | R:code:frontend/src/main.js,code:README.md | A:默认转发API到8080并支持隔离目标覆盖 | S:覆盖仅在设置STU_SYSTEM_API_PROXY_TARGET时生效，未设置仍代理localhost:8080
+new-workspace-preview.html[EU3T]: F:提供独立工作台预览的HTML挂载文档 | R:code:frontend/src/new-workspace-preview.js | A:供Vite单独加载新工作台预览入口 | S:-
+vite.new-workspace.config.js[FC4T]: F:为工作台预览定义独立Vite构建入口与输出目录 | R:code:frontend/vite.config.js,code:frontend/new-workspace-preview.html | A:验证新界面构建而不替换常规应用入口 | S:预览构建输出到独立目录，不覆盖默认dist
+
+===/<repository>/frontend/src/===
+App.vue[AU7T]: F:呈现登录入口并在认证后加载角色工作台 | R:code:frontend/src/DashboardView.vue,code:src/main/java/edu/stusystem/api/AuthController.java | A:验证凭据并以异步工作台承载账户成绩和个人资料流程 | S:工作台仅在存在认证令牌时动态加载，授权边界仍由后端执行
+main.js[EA4T]: F:导入共享样式并挂载Vue应用入口 | R:code:frontend/src/App.vue,code:frontend/src/style.css,code:frontend/src/stage4.css | A:创建应用并挂载到页面容器 | S:不在入口静态导入认证后工作台及其Element Plus组件
+style.css[CU5T]: F:定义登录、角色工作台和窄屏布局样式 | R:code:frontend/src/App.vue | A:提供前端共享界面视觉规则 | S:手机导航固定于视口底部并收起侧栏品牌
+stage4.css[CU5T]: F:定义账户成绩文件与个人中心的桌面排布 | R:code:frontend/src/App.vue,code:docs/DESIGN.md | A:统一文件上传、筛选和资料表单间距 | S:Stage 4不加入移动客户端专属布局
+DashboardView.vue[AU7S]: F:呈现认证后的角色工作台、数据查询和管理工作流 | R:code:frontend/src/App.vue,code:src/main/java/edu/stusystem/api/DomainController.java,code:src/main/java/edu/stusystem/service/AvatarService.java | A:加载身份范围内的数据并驱动账户成绩及个人资料操作 | S:退出事件须通知入口清除认证状态，前端角色导航不替代后端授权；头像通过/me/avatar相对路由读取
+NewWorkspace.vue[AU7L]: F:呈现按角色组织的工作区、姓名导航、头像退出菜单及成绩账户资料操作 | R:code:src/main/java/edu/stusystem/api/DomainController.java,code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/IdentityService.java,code:frontend/src/new-workspace.css | A:按当前身份加载范围数据并驱动查询写入与个人资料流程 | S:前端角色导航不构成授权边界，接口必须继续执行服务端身份与数据范围校验
+new-workspace-preview.js[EA3T]: F:创建Element Plus环境并挂载独立工作台预览组件 | R:code:frontend/src/NewWorkspace.vue,code:frontend/new-workspace-preview.html | A:支持不替换现有应用入口的界面预览 | S:-
+new-workspace.css[CU5S]: F:定义贴底白色工作区、透明侧栏、头像菜单和按钮圆角色彩 | R:code:frontend/src/NewWorkspace.vue | A:统一外层面板、导航状态与控件视觉层级 | S:主工作区白底延伸至视口底部且下角为直角；主按钮启用态蓝色、禁用态浅蓝
+
+===/<repository>/src/main/java/edu/stusystem/===
+StudentSystemApplication.java[EA5T]: F:启动应用并提供本地管理员初始化与恢复命令 | R:code:edu/stusystem/service/IdentityService.java | A:启动常规服务或运行一次性账户维护 | S:恢复模式仅local且Web只绑定127.0.0.1临时端口
+
+===/<repository>/src/main/java/edu/stusystem/api/===
+ApiErrors.java[MN5T]: F:把参数、权限、业务及上传大小异常映射为统一响应 | R:code:src/main/java/edu/stusystem/api/ApiException.java,code:src/main/java/edu/stusystem/security/SecurityConfig.java | A:统一HTTP错误状态和稳定业务码 | S:AccessDenied映射403；上传超限映射413且不返回文件内容
+ApiException.java[MD4T]: F:承载带HTTP状态和稳定业务码的API错误 | R:code:src/main/java/edu/stusystem/api/ApiErrors.java | A:供服务层拒绝非法或越权操作 | S:-
+AuthController.java[EI5T]: F:提供登录、当前身份和登出接口 | R:code:src/main/java/edu/stusystem/service/IdentityService.java,code:src/main/java/edu/stusystem/security/JwtService.java | A:签发并撤销当前Bearer凭证 | S:当前令牌仅一小时有效且登出按JTI持久撤销
+DomainController.java[EA6S]: F:公开账户、成绩文件和个人中心REST操作并委派服务 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/IdentityService.java,code:src/main/java/edu/stusystem/security/SecurityConfig.java | A:绑定HTTP参数、管理员角色约束和用例路由 | S:账户文件路由仅ADMIN；成绩文件路由仅ADMIN/TEACHER；个人中心目标取认证主体
+
+===/<repository>/src/main/java/edu/stusystem/security/===
+BearerTokenFilter.java[MS7T]: F:验证Bearer签名、账户当前状态角色版本与撤销记录 | R:code:src/main/java/edu/stusystem/security/JwtService.java,code:src/main/java/edu/stusystem/service/IdentityService.java | A:为每个受保护请求建立当前身份 | S:认证状态查询失败返回503并拒绝请求；Redis不可用不影响MySQL撤销事实检查
+CurrentUser.java[CI4T]: F:保存请求内账户角色与学生绑定身份 | R:code:src/main/java/edu/stusystem/security/BearerTokenFilter.java | A:为服务端授权计算提供主体数据 | S:学生资料ID独立于账户ID
+JwtService.java[MS5T]: F:签发和校验带JTI及账户版本的HMAC令牌 | R:code:src/main/java/edu/stusystem/security/BearerTokenFilter.java,code:src/main/java/edu/stusystem/api/AuthController.java | A:管理令牌签名、主体和一小时过期声明 | S:签名密钥少于32字节时应用拒绝启动
+SecurityConfig.java[MS7T]: F:配置无状态Bearer认证、接口授权和认证失败入口 | R:code:src/main/java/edu/stusystem/security/BearerTokenFilter.java,code:src/main/java/edu/stusystem/api/DomainController.java | A:开启方法级角色授权并限制公开路由 | S:未认证请求通过固定认证入口返回401；@PreAuthorize依赖方法安全启用
+
+===/<repository>/src/main/java/edu/stusystem/service/===
+AdminBootstrap.java[EA5T]: F:提供本地管理员首次初始化参数入口 | R:code:src/main/java/edu/stusystem/service/IdentityService.java | A:读取显式启动参数并调用管理员创建 | S:口令不记录日志且存在管理员时初始化被拒绝
+DomainService.java[DB7L]: F:编排账户、学生、成绩写入及授权范围查询 | R:code:src/main/java/edu/stusystem/api/DomainController.java,code:src/main/java/edu/stusystem/service/GradeDerivationAspect.java,code:src/main/java/edu/stusystem/service/GradeGpaCalculator.java,code:src/main/java/edu/stusystem/service/PasswordPolicy.java | A:校验角色数据范围、行锁顺序并发布一致性事件 | S:教师成绩范围为授权班级与课程交集；学生身份取绑定档案
+GradeDerivationAspect.java[MB7T]: F:在事务提交前刷新成绩派生汇总排名和班级人数 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/resources/db/migration/V1__identity_and_teaching.sql | A:消费成绩变更与人数变更事件并在BEFORE_COMMIT更新投影 | S:监听器需要活动事务，派生失败会使原业务事务回滚
+IdentityService.java[AI7M]: F:认证账户、资料与凭证生命周期并执行限流和管理员恢复 | R:code:edu/stusystem/security/BearerTokenFilter.java,code:edu/stusystem/api/AuthController.java,code:edu/stusystem/service/AtomicRateLimitService.java | A:提供身份查询、账户变更、个人资料及受审计的密码恢复 | S:角色状态及密码变更递增auth_version使旧令牌失效
+AuditAspect.java[MB7T]: F:围绕审计标记的业务方法记录操作成功或失败 | R:code:src/main/java/edu/stusystem/service/Audited.java,code:src/main/java/edu/stusystem/service/AuditService.java | A:提取操作者与目标并写入脱敏审计事件 | S:审计不采集请求体或凭据，失败记录在业务异常后独立事务保存
+AuditService.java[PB6T]: F:将操作结果元数据写入审计表 | R:code:src/main/java/edu/stusystem/service/AuditAspect.java,code:src/main/resources/db/migration/V1__identity_and_teaching.sql | A:使用独立新事务保存审计结果 | S:审计持久化失败被调用方隔离，不改变原业务结果
+Audited.java[MB5T]: F:声明业务方法的审计动作和目标标识参数 | R:code:src/main/java/edu/stusystem/service/AuditAspect.java | A:提供运行时方法级审计元数据 | S:-
+GradeGpaAspect.java[KB6T]: F:校验成绩精度范围并按分段规则计算单科GPA | R:code:src/main/java/edu/stusystem/service/GradeGpaCalculator.java,code:docs/开发文档.md | A:拦截GPA计算代理调用并返回服务器绩点 | S:绕过Spring代理直接实例化计算器会触发未激活异常
+GradeGpaCalculation.java[KB3T]: F:承载分数及其服务器计算GPA结果 | R:code:src/main/java/edu/stusystem/service/GradeGpaCalculator.java,code:src/main/java/edu/stusystem/service/DomainService.java | A:在成绩持久化调用间传递不可变计算值 | S:-
+GradeGpaCalculator.java[KB5T]: F:提供经Spring代理执行的单科GPA计算入口 | R:code:src/main/java/edu/stusystem/service/GradeGpaAspect.java,code:src/main/java/edu/stusystem/service/DomainService.java | A:将成绩写入委托给GPA切面 | S:方法体依赖GradeGpaAspect环绕通知，未代理调用会直接失败
+GradeMetrics.java[KB6T]: F:汇总成绩记录的计数分数有效权重绩点和学分 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:docs/开发文档.md | A:按成绩事实计算统一派生指标 | S:有效权重为零时加权平均和GPA返回null而不伪造为零
+GradeRanking.java[KB6T]: F:按未舍入加权均分生成竞赛排名 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/resources/db/migration/V2__class_term_ranking.sql | A:精确比较加权分子分母并分配并列名次 | S:用交叉相乘比较比值，避免舍入改变名次
+AtomicRateLimitService.java[CS6T]: F:以Redis Lua原子维护失败窗口和限流锁 | R:code:src/main/java/edu/stusystem/service/IdentityService.java | A:提供失败计数、锁定、清理及标识摘要键 | S:首次失败开启计数TTL；达到阈值时独立启动锁定TTL；Redis异常映射503
+PasswordPolicy.java[CS5T]: F:统一验证原始密码长度、字符类别和用户名差异 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/IdentityService.java | A:供账户创建、管理员初始化与密码重置复用 | S:密码不得隐式trim；至少满足四类字符中的三类
+SpreadsheetUploadPolicy.java[CS6S]: F:限制XLSX上传类型、文件与ZIP解压资源 | R:code:src/main/java/edu/stusystem/api/ApiException.java,code:src/main/java/edu/stusystem/service/XlsxWorkbookReader.java,code:docs/API.md | A:校验上传并预检归档后再交给POI解析 | S:实际累计解压量上限64 MiB，单条目10 MiB并限制256项
+AccountImportService.java[DB6S]: F:解析账户工作簿并按行创建、跳过或报告失败 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/PasswordPolicy.java,code:src/main/java/edu/stusystem/service/XlsxWorkbookReader.java | A:复用账户事务创建和学生档案绑定 | S:临时密码不写入行报告；已有身份只跳过不重置密码
+AvatarCleanupService.java[AR5T]: F:定时重试头像对象清理队列中的到期任务 | R:code:src/main/java/edu/stusystem/service/AvatarMetadataService.java,code:src/main/java/edu/stusystem/service/AvatarStorageRegistry.java | A:检查对象未被激活引用后调用对应存储删除 | S:存储或队列更新失败保留任务并安排退避重试
+AvatarImageValidator.java[CS6T]: F:校验头像声明类型、实际签名、解码结果及资源上限 | R:code:src/main/java/edu/stusystem/service/AvatarService.java,code:pom.xml,code:docs/开发文档.md | A:上传存储前识别并完整解码JPEG、PNG、GIF或WebP | S:WebP须由实际解码器读取像素，不能仅凭RIFF/WEBP头放行
+AvatarMetadataService.java[PS6T]: F:事务维护账户头像引用及对象清理重试队列 | R:code:src/main/resources/db/migration/V5__avatar_storage_and_cleanup.sql,code:src/main/java/edu/stusystem/service/AvatarService.java,code:src/main/java/edu/stusystem/service/AvatarCleanupService.java | A:切换owner头像并持久化旧对象删除任务 | S:清理前核验对象不再被任何活动头像引用
+AvatarService.java[AB6T]: F:编排认证账户头像替换、读取和移除流程 | R:code:src/main/java/edu/stusystem/service/AvatarImageValidator.java,code:src/main/java/edu/stusystem/service/AvatarStorageRegistry.java,code:src/main/java/edu/stusystem/service/AvatarMetadataService.java | A:先上传新对象再切换引用并清理旧对象 | S:元数据提交失败时旧头像引用不变，新对象由预置清理任务回收
+AvatarStorage.java[CI5T]: F:定义头像对象存储写入、读取和删除接口 | R:code:src/main/java/edu/stusystem/service/LocalAvatarStorage.java,code:src/main/java/edu/stusystem/service/CosAvatarStorage.java | A:隔离头像业务服务与底层存储实现 | S:-
+AvatarStorageProperties.java[FC4T]: F:读取头像本地目录、COS区域、桶和密钥配置 | R:code:src/main/java/edu/stusystem/service/CosAvatarStorage.java,code:src/main/java/edu/stusystem/service/LocalAvatarStorage.java | A:提供student.avatar配置绑定属性 | S:密钥属性仅供服务端COS客户端使用
+AvatarStorageRegistry.java[CI5T]: F:按服务端provider配置选择头像存储实现 | R:code:src/main/java/edu/stusystem/service/AvatarStorage.java,code:src/main/java/edu/stusystem/service/AvatarStorageProperties.java | A:返回活动存储或按元数据provider选择历史存储 | S:-
+CosAvatarStorage.java[CI6T]: F:通过腾讯COS客户端上传、读取和删除头像对象 | R:code:src/main/java/edu/stusystem/service/AvatarStorage.java,code:src/main/java/edu/stusystem/service/AvatarStorageProperties.java,code:pom.xml | A:将对象操作适配到统一头像存储接口 | S:缺少COS密钥、区域或桶配置时应用拒绝启用COS适配器
+GradeImportService.java[DB6T]: F:解析成绩工作簿并将稳定ID批次交给成绩服务校验写入 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/XlsxWorkbookReader.java | A:解析学号课程学期并整批调用成绩新增事务 | S:关联数据库不可用返回503，不伪装为行内容错误
+LocalAvatarStorage.java[CI5T]: F:在应用临时目录以原子文件替换保存头像对象 | R:code:src/main/java/edu/stusystem/service/AvatarStorage.java,code:src/main/java/edu/stusystem/service/AvatarStorageProperties.java | A:提供本机开发用头像存储实现 | S:对象键只允许单段文件名并解析在配置根目录内
+SensitivePasswordVerificationService.java[CS6T]: F:校验本人当前密码并按账户执行敏感操作限流 | R:code:src/main/java/edu/stusystem/service/IdentityService.java,code:src/main/java/edu/stusystem/service/AtomicRateLimitService.java | A:向资料验证及改密用例提供当前凭据检查 | S:第三次失败锁五分钟，Redis故障返回503且不跳过验证
+XlsxWorkbookReader.java[CG6T]: F:解析有界XLSX单表并保留源行号及单元格类型 | R:code:src/main/java/edu/stusystem/service/SpreadsheetUploadPolicy.java,code:src/main/java/edu/stusystem/service/AccountImportService.java,code:src/main/java/edu/stusystem/service/GradeImportService.java | A:预检压缩包并拒绝公式与错误单元格 | S:公式单元格不求值，源记录行号随结果保留
+XlsxWorkbookWriter.java[CG6T]: F:生成有界XLSX模板和安全数据导出 | R:code:src/main/java/edu/stusystem/api/DomainController.java,code:src/main/java/edu/stusystem/service/SpreadsheetUploadPolicy.java | A:限制行列和文本体量并将值写入文本格 | S:所有导出值显式为字符串以阻止公式执行
+
+===/<repository>/src/main/resources/===
+application.yml[FC5T]: F:设置服务时区、迁移、健康检查与请求文件限额 | R:code:src/main/resources/application-local.yml,code:pom.xml | A:提供Spring Boot基础运行配置 | S:单文件multipart限10 MiB并统一限制请求体
+
+===/<repository>/src/main/resources/db/migration/===
+V1__identity_and_teaching.sql[PB7S]: F:建立身份、教学范围、成绩与派生汇总关系表 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/IdentityService.java | A:由Flyway创建全新stu_system关系结构 | S:成绩以学生课程学期唯一，学分成绩使用DECIMAL，令牌撤销以JTI为主键
+V2__grade_rankings.sql[PB6T]: F:建立班级学期排名派生表及其外键和查询索引 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/service/GradeRanking.java,code:src/main/resources/db/migration/V1__identity_and_teaching.sql | A:由Flyway创建可按班级学期读取的排名投影 | S:排名投影不保存零有效权重学生，完整班级名单由查询左连接补齐
+V3__preserve_fractional_assessment_weights.sql[PB5T]: F:扩大学期汇总与排名有效权重列的小数精度 | R:code:src/main/resources/db/migration/V2__grade_rankings.sql,code:src/main/java/edu/stusystem/service/DomainService.java | A:由Flyway保留考查课程的半学分有效权重 | S:-
+V4__account_contact_fields.sql[PI6T]: F:为账户增加可空邮箱手机号及唯一索引 | R:database://stu_system/identity/iam_account,code:src/main/java/edu/stusystem/service/IdentityService.java | A:由Flyway扩展账户联系方式约束 | S:MySQL唯一索引允许多个NULL，非空值全局唯一
+V5__avatar_storage_and_cleanup.sql[PB6T]: F:建立账户头像对象元数据和可重试清理队列 | R:code:src/main/java/edu/stusystem/service/AvatarMetadataService.java,code:src/main/java/edu/stusystem/service/AvatarService.java | A:由Flyway创建owner唯一引用和清理任务索引 | S:头像引用外键随账户删除级联；对象键不对外暴露
+
+===/<repository>/src/test/java/edu/stusystem/service/===
+GradeConsistencyMySqlTest.java[TB7L]: F:验证成绩事务派生、学生生命周期和授权HTTP行为 | R:code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/api/DomainController.java,code:src/main/resources/db/migration/V1__identity_and_teaching.sql | A:仅在专用MySQL schema运行并检查一致性边界 | S:测试URL守卫只接受stu_stage3_test前缀且每例会清理该库夹具
+GradeGpaAspectTest.java[TB5T]: F:验证GPA切面代理、全部分数阈值与非法精度拒绝 | R:code:src/main/java/edu/stusystem/service/GradeGpaAspect.java,code:docs/开发文档.md | A:在轻量Spring上下文中验证GPA计算代理 | S:-
+GradeMetricsTest.java[TB5T]: F:验证成绩汇总、考查半权重和零权重空值规则 | R:code:src/main/java/edu/stusystem/service/GradeMetrics.java,code:docs/开发文档.md | A:用固定十进制样例检查统计公式 | S:-
+GradeRankingTest.java[TB5T]: F:验证精确加权排名、并列跳号及学期隔离 | R:code:src/main/java/edu/stusystem/service/GradeRanking.java,code:docs/开发文档.md | A:用定点分子分母样例校验排名算法 | S:-
+AtomicRateLimitServiceRedisTest.java[TS6S]: F:验证Redis限流时效、故障关闭和隔离进程连接 | R:code:src/main/java/edu/stusystem/service/AtomicRateLimitService.java | A:检查随机测试键及可配置Redis端点 | S:拒绝连接测试固定使用本机端口1；真实服务测试默认127.0.0.1:6379并可由REDIS_TEST_HOST和REDIS_TEST_PORT覆盖
+Stage4AccountSecurityMySqlTest.java[TI7L]: F:验证Stage 4账户、成绩、资料、安全和审计验收 | R:code:src/main/java/edu/stusystem/service/IdentityService.java,code:src/main/java/edu/stusystem/service/DomainService.java,code:src/main/java/edu/stusystem/api/DomainController.java | A:在专用schema及隔离Redis运行MockMvc事务测试 | S:夹具仅允许stu_stage4_test前缀并清理该库业务表
+AccountImportServiceTest.java[TB4T]: F:验证账户导入逐行结果、重复跳过和角色拒绝 | R:code:src/main/java/edu/stusystem/service/AccountImportService.java | A:用XLSX工作簿检查计数及临时密码脱敏 | S:-
+AvatarImageValidatorTest.java[TS5T]: F:验证头像真实格式、声明MIME、大小和解码 | R:code:src/main/java/edu/stusystem/service/AvatarImageValidator.java,code:pom.xml | A:覆盖PNG与WebP成功解码及伪造内容拒绝 | S:-
+AvatarServiceTest.java[TS4T]: F:验证头像替换失败保留旧引用并将清理失败排入重试 | R:code:src/main/java/edu/stusystem/service/AvatarService.java,code:src/main/java/edu/stusystem/service/AvatarMetadataService.java | A:检查存储调用和owner元数据结果 | S:-
+GradeImportServiceTest.java[TB4T]: F:验证成绩导入保留文本学号并委派完整批次 | R:code:src/main/java/edu/stusystem/service/GradeImportService.java,code:src/main/java/edu/stusystem/service/XlsxWorkbookReader.java | A:检查稳定ID解析、分数精度和数字学号拒绝 | S:-
+LocalAvatarStorageTest.java[TR3T]: F:验证本地头像对象的写读删和路径穿越拒绝 | R:code:src/main/java/edu/stusystem/service/LocalAvatarStorage.java | A:使用临时目录检查对象生命周期 | S:-
+RedisLockProbe.java[TS3T]: F:在独立JVM读取指定Redis限流锁 | R:code:src/main/java/edu/stusystem/service/AtomicRateLimitService.java,code:src/test/java/edu/stusystem/service/Stage4AccountSecurityMySqlTest.java | A:为进程边界持久性集成测试提供子进程探针 | S:Redis主机端口继承REDIS_TEST_HOST与REDIS_TEST_PORT以保持测试隔离
+SensitivePasswordVerificationServiceTest.java[TS5T]: F:验证当前密码失败锁定、命中锁跳过比较和成功清理 | R:code:src/main/java/edu/stusystem/service/SensitivePasswordVerificationService.java | A:以隔离Redis调用核对账户计数边界 | S:-
+SpreadsheetUploadPolicyTest.java[TB5T]: F:验证XLSX上传签名、ZIP条目与解压资源边界 | R:code:src/main/java/edu/stusystem/service/SpreadsheetUploadPolicy.java | A:以生成工作簿覆盖资源限制和内容拒绝行为 | S:累计解压样例令多项总量超64 MiB且单项未超限
+XlsxWorkbookReaderTest.java[TG4T]: F:验证XLSX读取保留长文本学号与源行号并拒绝公式超行 | R:code:src/main/java/edu/stusystem/service/XlsxWorkbookReader.java | A:用生成工作簿检查单元格类型和批次边界 | S:-
+XlsxWorkbookWriterTest.java[TG4T]: F:验证导出用户文本保持字符串并拒绝超行 | R:code:src/main/java/edu/stusystem/service/XlsxWorkbookWriter.java | A:重开生成工作簿检查单元格类型和行数边界 | S:-
+BrowserAcceptanceWorkbookFixtureTest.java[TB4T]: F:生成并回读真实API浏览器验收用账户和成绩工作簿 | R:code:src/main/java/edu/stusystem/service/AccountImportService.java,code:src/main/java/edu/stusystem/service/GradeImportService.java | A:把合成XLSX夹具写入构建输出目录 | S:仅在显式运行测试时生成，输出位于target/browser-acceptance-fixtures
+RedisServiceDisconnectAcceptanceTest.java[TS5T]: F:验证真实Redis进程断连后限流服务返回不可用 | R:code:src/main/java/edu/stusystem/service/AtomicRateLimitService.java | A:仅在显式验收开关下终止指定隔离进程 | S:要求REDIS_DISCONNECT_ACCEPTANCE=true且只杀REDIS_TEST_SERVER_PID指定的PID
+
+===/<repository>/src/test/java/edu/stusystem/security/===
+BearerTokenFilterTest.java[TI5T]: F:验证Bearer过滤器在数据库状态不可用时返回503 | R:code:src/main/java/edu/stusystem/security/BearerTokenFilter.java,code:src/main/java/edu/stusystem/security/JwtService.java | A:检查认证状态异常时的固定响应和过滤链短路 | S:真实连接拒绝用本机未监听端口模拟；令牌只用测试密钥签发
+
+===/<repository>/docs/evidence/stage4/===
+README.md[SC4T]: F:区分Stage 4历史静态夹具与最终真实API验收证据 | R:code:docs/evidence/stage4/ego/round-04.mjs,code:docs/evidence/stage4/ego/round-07.mjs,code:docs/TASKS.md,code:docs/TESTING.md | A:记录桌面工作流截图、审查结果与阶段边界 | S:旧静态夹具截图不代表后端验收；最终真实API截图和操作结果单独记录
+
+===/<repository>/docs/evidence/stage4/ego/===
+round-01.mjs[XQ4T]: F:在ego-browser中打开Stage 4本地界面并记录页面状态 | R:code:frontend/src/App.vue | A:创建桌面审查task space并输出初始快照 | S:-
+round-02.mjs[XQ3T]: F:检查ego-browser会话与截图API能力 | R:- | A:读取task space页面清单和内置帮助 | S:-
+round-03.mjs[XQ4T]: F:设置桌面视口并截取Stage 4登录页 | R:code:frontend/src/App.vue | A:保存登录页面截图和浏览器视口尺寸 | S:-
+round-04.mjs[XQ4T]: F:通过浏览器内静态API夹具预览Stage 4管理员界面 | R:code:frontend/src/App.vue | A:输出虚拟账户角色和成绩数据以检查工作台布局 | S:夹具仅存在于当前浏览器task space，不调用后端或写测试数据
+round-05.mjs[XQ4T]: F:截取并检查Stage 4账户导入导出桌面页面 | R:code:frontend/src/App.vue,code:frontend/src/stage4.css | A:保存1440x900账户页全屏图并输出页面语义快照 | S:-
+round-06.mjs[XQ4T]: F:检查成绩文件和个人中心桌面页面 | R:code:frontend/src/App.vue,code:frontend/src/stage4.css | A:保存1440x900与1280x800视口截图 | S:-
+round-07.mjs[XQ4T]: F:重截账户、成绩和个人中心Stage 4桌面页面 | R:code:frontend/src/App.vue,code:frontend/src/stage4.css | A:输出1440x900及1280x800全页截图 | S:-
+round-09.mjs[XQ3T]: F:查询已有ego-browser task space用于恢复本轮截图会话 | R:- | A:读取已有浏览器空间身份和归属 | S:-
+round-10-real-api.mjs[XQ4T]: F:从测试夹具读取合成管理员凭据并打开隔离真实API登录页 | R:code:frontend/src/App.vue,code:src/test/java/edu/stusystem/service/Stage4AccountSecurityMySqlTest.java | A:登录隔离工作区并记录初始语义快照 | S:凭据仅来自本地测试夹具且脚本不打印凭据
+round-11-real-api-workspaces.mjs[XQ4T]: F:检查隔离真实API账户成绩和个人中心工作区并请求文件下载 | R:code:frontend/src/DashboardView.vue,code:docs/evidence/stage4/README.md | A:在1440x900与1280x800截图并删除临时下载 | S:下载内容不留在验收证据目录
+round-12-real-api-profile-security.mjs[XQ4T]: F:通过隔离API执行用户名联系人头像和改密工作流 | R:code:frontend/src/DashboardView.vue,code:src/main/java/edu/stusystem/service/IdentityService.java | A:验证资料操作和重新登录 | S:新口令随机生成且不打印
+round-13-real-api-password-reauth.mjs[XQ4T]: F:验证当前密码改密后登出并用新凭据登录 | R:code:frontend/src/DashboardView.vue,code:src/main/java/edu/stusystem/service/IdentityService.java | A:确认凭据失效后的交互 | S:新凭据不输出
+round-14-real-api-avatar-fix.mjs[XQ4T]: F:复核头像读取显示和默认头像恢复 | R:code:frontend/src/DashboardView.vue,code:src/main/java/edu/stusystem/service/AvatarService.java | A:确认隔离API图像加载与移除 | S:头像仅读取本人/me/avatar路由
+round-15-real-api-stable-captures.mjs[XQ4T]: F:等待账户成绩和资料数据加载后保存真实API稳定截图 | R:code:frontend/src/DashboardView.vue,code:docs/evidence/stage4/README.md | A:捕获两种桌面视口下的真实工作区 | S:截图前确认数据加载而非瞬时空状态
+round-16-real-api-imports.mjs[XQ4T]: F:在隔离真实API导入合成账户和成绩并核验导出 | R:code:src/test/java/edu/stusystem/service/BrowserAcceptanceWorkbookFixtureTest.java,code:frontend/src/DashboardView.vue | A:请求导出文件并删除临时下载 | S:账户导入临时口令不打印
+round-17-real-api-imported-captures.mjs[XQ4T]: F:按导入计数条件截图真实账户和成绩列表 | R:code:frontend/src/DashboardView.vue,code:docs/evidence/stage4/README.md | A:保存含导入行的稳定桌面页面 | S:测试重置schema后旧浏览器凭证失效需重新登录
+round-18-isolated-admin-relogin.mjs[XQ4T]: F:隔离schema重置后用测试夹具管理员恢复API会话 | R:code:frontend/src/App.vue,code:src/test/java/edu/stusystem/service/Stage4AccountSecurityMySqlTest.java | A:验证重新登录入口 | S:合成凭据不输出
+round-19-final-real-api-captures.mjs[XQ4T]: F:按实际账户成绩条数截图导入后的真实API页面 | R:code:frontend/src/DashboardView.vue,code:docs/evidence/stage4/README.md | A:保存导入成功态的两个尺寸截图 | S:捕获前等待账户和成绩行数符合实际响应
+round-20-final-heading-review.mjs[XQ4T]: F:检查概览副标题和工作区标题并截图 | R:code:frontend/src/DashboardView.vue,code:docs/evidence/stage4/README.md | A:复核账户和资料页层级 | S:概览保留说明且非概览不重复权限副标题
+round-21-final-accessibility-review.mjs[XQ4T]: F:尝试检查最终账户和资料页面可访问性 | R:code:frontend/src/DashboardView.vue,code:src/test/java/edu/stusystem/service/Stage4AccountSecurityMySqlTest.java | A:准备核验表单及键盘焦点 | S:浏览器可能复用已认证状态而跳过登录框，脚本应先读当前页面
+round-22-final-a11y-check.mjs[XQ4T]: F:验证工作区标题、资料字段名称和键盘焦点 | R:code:frontend/src/DashboardView.vue,code:docs/evidence/stage4/README.md | A:检查非概览标题并以Tab确认焦点可见 | S:资料与密码输入提供显式aria-label
+
+===/<repository>/docs/superpowers/plans/===
+2026-11-22-stage4-account-files.md[SC5T]: F:分解共享XLSX和账户文件工作流的实现及验收任务 | R:code:docs/superpowers/specs/2026-11-22-stage4-completion-design.md,code:docs/STAGE-4-ROADMAP.md | A:指导账户文件子线按步骤实现与验证 | S:-
+
+===/<repository>/docs/superpowers/specs/===
+2026-11-22-stage4-completion-design.md[SC5T]: F:定义Stage 4账户成绩文件、个人中心和头像的架构与验收边界 | R:code:docs/STAGE-4-ROADMAP.md,code:docs/开发文档.md | A:约束跨模块实现顺序和失败恢复策略 | S:-
+
+===/<repository>/src/test/java/edu/stusystem/api/===
+ApiErrorsTest.java[TN4T]: F:验证上传体超限映射为稳定413错误响应 | R:code:src/main/java/edu/stusystem/api/ApiErrors.java | A:检查HTTP状态和FILE_TOO_LARGE业务码 | S:-
+
+===/<repository>/docs/evidence/new-workspace/===
+README.md[SC3T]: F:说明新工作台截图的视口、角色和验证边界 | R:code:docs/TASKS.md,code:frontend/src/NewWorkspace.vue | A:区分静态导航预览与真实API验收证据 | S:本组截图未使用令牌或模拟API，不能证明后端数据渲染
